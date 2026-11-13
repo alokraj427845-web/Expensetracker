@@ -17,8 +17,13 @@ app.use(
 
 app.use(express.json());
 
-// Serve uploaded files
+// Serve uploaded files (receipts)
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+
+
+app.use("/uploads", (req, res) => {
+  res.status(404).send("Receipt file not found");
+});
 
 // Root Route
 app.get("/", (req, res) => {
@@ -33,7 +38,6 @@ app.get("/health", (req, res) => {
   });
 });
 
-// API Routes
 // API Routes
 app.use("/api/auth", require("./routes/authRoutes"));
 app.use("/api/expenses", require("./routes/expenseRoutes"));

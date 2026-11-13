@@ -5,8 +5,7 @@ import Navbar from "../components/Navbar";
 import RazorpayButton from "../components/RazorpayButton";
 import { getCache, setCache } from "../utils/cache";
 
-const API = import.meta.env.VITE_API_URL || "";
-
+const API = "";
 export default function SettleUp() {
   const { user } = useAuth();
   const cacheKey = `settle:${user._id}`;
@@ -14,7 +13,7 @@ export default function SettleUp() {
 
   const [balances,     setBalances]     = useState(cached?.balances || []);
   const [payments,     setPayments]     = useState(cached?.payments || []);
-  const [loading,      setLoading]      = useState(!cached);   // show "Loading" only on very first visit
+  const [loading,      setLoading]      = useState(!cached);   
   const [toast,        setToast]        = useState("");
   const [receiptModal, setReceiptModal] = useState(null);
   const [approveModal, setApproveModal] = useState(null);
@@ -22,13 +21,13 @@ export default function SettleUp() {
   const [receiptNote,  setReceiptNote]  = useState("");
   const [manualMode,   setManualMode]   = useState("Cash");
   const [rejectReason, setRejectReason] = useState("");
-  // ONE state that says WHICH action is running: "receipt" | "approve" | "reject" | null
+ 
   const [busy,         setBusy]         = useState(null);
   const fileRef = useRef();
 
   useEffect(() => { fetchData(); }, []);
 
-  // Silent refresh: never blanks the page
+  
   const fetchData = async () => {
     try {
       const [bRes, pRes] = await Promise.all([
@@ -47,7 +46,7 @@ export default function SettleUp() {
     setTimeout(() => setToast(""), 3000);
   };
 
-  // ── Submit receipt ────────────────────────────────────────────────────────
+  
   const handleSubmitReceipt = async () => {
     if (!receiptFile) return showToast("Please select a receipt image", "error");
     setBusy("receipt");
@@ -88,7 +87,7 @@ export default function SettleUp() {
     }
   };
 
-  // ── Approve (status changes ONLY after the server says OK) ────────────────
+  
   const handleApprove = async () => {
     setBusy("approve");
     try {
@@ -101,7 +100,7 @@ export default function SettleUp() {
     finally { setBusy(null); }
   };
 
-  // ── Reject ────────────────────────────────────────────────────────────────
+  
   const handleReject = async () => {
     setBusy("reject");
     try {
@@ -128,13 +127,11 @@ export default function SettleUp() {
     }
   };
 
-  // ── Compute what's pending ────────────────────────────────────────────────
-  // Payments I need to act on
+  
   const pendingUpload = payments.filter(p => p.status === "pending_receipt" && p.from?._id === user._id);
   const pendingApproval = payments.filter(p => p.status === "receipt_submitted" && p.to?._id === user._id);
 
-  // Balances where I owe someone and no pending payment exists
- // Only hide "You owe" if there's a PENDING (not approved) payment for that user
+ 
 const pendingSettleUserIds = new Set(
   payments
     .filter(p => ["pending_receipt", "receipt_submitted"].includes(p.status))
